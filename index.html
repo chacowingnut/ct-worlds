@@ -307,6 +307,10 @@
                 out += "\n\n## Government ##\n" + government_desc[this.government];
                 out += "\n\n## Law ##\n" + law_desc[this.law_level];
                 out += "\n\n## Technology ##\n" + tech_desc[this.tech_level];
+                out += "\n\n## Trade Classifications ##\n";
+                for (let tc of this.trade_classifications) {
+                    out += `- ${tc}\n`
+                }
                 return out;
             }
         }
