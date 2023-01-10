@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.00">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: monospace;
+        }
+        hr {
+            border: 3px solid red;
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+        pre {
+            max-width: 400px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Worlds with Some Numbers</h1>
+    <hr>
+    <pre id="outie"></pre>
+    <script>
+        function choose(some_array) {
+          return some_array[Math.floor(Math.random()*some_array.length)];
+        }
+
+        function getRndInteger(min, max) {
+          return Math.floor(Math.random() * (max - min + 1) ) + min;
+        }
+
+        function d(how_many, sides){
+          let total = 0;
+          let i;
+          for (i = 0; i < how_many; i++) {
+            total += getRndInteger(1, sides);
+          }
+          return total;
+        }
+
+        hexnum_index = {
+            10: "A",
+            11: "B",
+            12: "C",
+            13: "D",
+            14: "E",
+            15: "F",
+            16: "G",
+            17: "H",
+            18: "I",
+        }
+        function int_to_hexastr(n) {
+            if (n in hexnum_index) {return hexnum_index[n];}
+            return n.toString();
+        }
+
+        const starport_index = ["A", "A", "A", "B", "B", "C", "C", "D", "E", "E", "X"];
+
+        const tech_starport_index = {
+            "A": 6,
+            "B": 4,
+            "C": 2,
+            "X": -4
+        };
+
+        const starport_desc = {
+            "A": "Excellent quality installation.\nRefined fuel, annual overhaul, and\nshipyard services available.",
+            "B": "Good quality installation.\nRefined fuel, annual overhaul, and\nnon-starship shipyard services available.",
+            "C": "Routine quality installation.\nUnrefined fuel and repair servicies available.",
+            "D": "Poor quality installation.\nUnrefined fuel available.",
+            "E": "Frontier installation.",
+            "X": "None",
+        };
+
+        const size_desc = [
+            "Asteroid/planetoid(s)",
+            "1,600 km",
+            "3,200 km",
+            "4,800 km",
+            "6,400 km",
+            "8,000 km",
+            "9,600 km",
+            "11,200 km",
+            "12,800 km",
+            "14,400 km",
+            "16,000 km",
+        ];
+
+        const atmosphere_desc = [
+            "None.\nVac suit required.",
+            "Trace.\nVac suit required.",
+            "Very thin, tainted.\nCompressor/filter mask required.",
+            "Very thin.\nCompressor mask required.",
+            "Thin, tainted.\nFilter mask required.",
+            "Thin",
+            "Standard",
+            "Standard, tainted.\nFilter mask required.",
+            "Dense",
+            "Dense, tainted.\nFilter mask required.",
+            "Exotic.\nSupplied breathing air required.",
+            "Corrosive.\nAir-tight PPE required.",
+            "Insidious.\nDANGER!\nAir-tight PPE required.",
+        ];
+
+        const population_desc = [
+            "No inhabitants.",
+            "Tens of persons.",
+            "Hundreds of persons.",
+            "Thousands of persons.",
+            "Tens of thousands of persons.",
+            "Hundreds of thousands of persons.",
+            "Millions of persons.",
+            "Tens of millions of persons.",
+            "Hundreds of millions of persons.",
+            "Billions of persons.",
+            "Tens of billions of persons.",
+        ];
+
+        const government_desc = [
+            "No government.",
+            "Company/corporation.",
+            "Participatory democracy.",
+            "Self-perpetuating oligarchy.",
+            "Representative democracy.",
+            "Fuedal technocracy.",
+            "Captive government.",
+            "Balkanization.",
+            "Civil service bureaucracy.",
+            "Impersonal bureaucracy.",
+            "Charismatic dictator.",
+            "Non-charismatic leader.",
+            "Charismatic oligarchy.",
+            "Theocracy.",
+        ];
+
+        const law_desc = [
+            "No prohibitions.",
+            "Concealed firearms and heavy ordnance prohibitied.",
+            "Portable energy weapons prohibited.",
+            "Military-grade weapons prohibited.",
+            "All automatic weapons prohibitied.",
+            "Personal firearms such as pistols prohibited.",
+            "All Non-hunting firearms are prohibited.",
+            "All firearms prohibited.",
+            "Long-bladed weapons prohibited.",
+            "All weapons in public spaces prohibited.",
+            "All weapons prohibited.",
+        ];
+
+        const tech_desc = [
+            "Stone Age.",
+            "Bronze Age to Middle Ages.",
+            "Renaissance period.",
+            "Enlightenment period.",
+            "Industrial revolution period.",
+            "Early 20th century.",
+            "Mid 20th century. Pre-atomic.",
+            "Late 20th century. Post-atomic.",
+            "21st century. Semiconductors.",
+            "Primitive interstellar spaceflight. Fusion.",
+            "Average Imperial.",
+            "Average Imperial.",
+            "Above average Imperial.",
+            "Above average Imperial.",
+            "Imperial state-of-the-art.",
+            "Remarkably advanced.",
+        ];
+
+        class World {
+            constructor() {
+                this.starport = starport_index[d(2, 6) - 2];
+                this.naval_base = d(2, 6) > 7;
+                this.scout_base = d(2, 6) > 6;
+                this.gas_giant = d(2, 6) < 10;
+                this.size = d(2, 6) - 2;
+                this.atmosphere = Math.max(d(2, 6) - 7 + this.size, 0);
+                this.atmosphere = this.size === 0 ? 0 : this.atmosphere;
+                this.hydrographics = this.get_hydrographics();
+                this.population = d(2, 6) - 2;
+                this.government = Math.max(d(2, 6) - 7 + this.population, 0);
+                this.law_level = Math.min(Math.max(d(2, 6) - 7 + this.government, 0), 10);
+                this.tech_level = this.get_tech_level();
+                this.trade_classifications = this.get_trade_classifications();
+            }
+
+            get_trade_classifications() {
+                let out = [];
+                if (
+                    this.atmosphere > 3
+                    && this.atmosphere < 10
+                    && this.hydrographics > 3
+                    && this.hydrographics < 9
+                    && this.population > 4
+                    && this.population < 8
+                ) {
+                    out.push("agricultural");
+                }
+                if (
+                    this.atmosphere < 4
+                    && this.hydrographics < 4
+                    && this.population > 5
+                ) {
+                    out.push("non-agricultural");
+                }
+                if (
+                    [0, 1, 2, 4, 7, 9].includes(this.atmosphere)
+                    && this.population > 8
+                ) {
+                    out.push("industrial");
+                }
+                if (this.population < 7) {out.push("non-industrial");}
+                if (
+                    [6, 8].includes(this.atmosphere)
+                    && [6, 7, 8].includes(this.population)
+                    && [4, 5, 6, 7, 8, 9].includes(this.government)
+                ) {
+                    out.push("rich");
+                }
+                if (
+                    [2, 3, 4, 5].includes(this.atmosphere)
+                    && this.hydrographics < 4
+                ) {
+                    out.push("poor");
+                }
+                if (this.hydrographics === 10) {out.push("water world");}
+                if (
+                    this.hydrographics === 0
+                    && this.atmosphere > 1
+                ) {
+                    out.push("desert world");
+                }
+                if (this.atmosphere === 0) {out.push("vacuum world");}
+                if (this.size === 0) {out.push("asteroid belt");}
+                if (this.atmosphere < 2 && this.hydrographics > 0) {
+                    out.push("ice-capped");
+                }
+                return out;
+            }
+
+            get_tech_level() {
+                let level = d(1, 6);
+                if (this.starport in tech_starport_index) {
+                    level += tech_starport_index[this.starport];
+                }
+                if (this.size < 2) {
+                    level += 2;
+                } else if (this.size < 5) {
+                    level += 1;
+                }
+                if (this.atmosphere < 4 || this.atmosphere > 9) {
+                    level += 1;
+                }
+                if (this.hydrographics === 9) {
+                    level += 1;
+                }
+                if (this.hydrographics === 10) {
+                    level += 2;
+                }
+                if (this.population < 6 && this.population > 0) {
+                    level += 1;
+                }
+                if (this.population === 9) {
+                    level += 2;
+                }
+                if (this.population === 10) {
+                    level += 4;
+                }
+                if (this.government === 0 || this.government === 5) {
+                    level += 1;
+                }
+                if (this.government === 13) {
+                    level -= 2;
+                }
+                return Math.max(level, 0);
+            }
+
+            get_hydrographics() {
+                if (this.size < 2) {return 0;}
+                let mods = 0;
+                if (this.atmosphere < 2 || this.atmosphere > 9) {
+                    mods = -4;
+                }
+                return Math.max(d(2, 6) - 7 + this.size + mods, 0);
+            }
+
+            get uwp() {
+                let out = this.starport;
+                out += int_to_hexastr(this.size);
+                out += int_to_hexastr(this.atmosphere);
+                out += int_to_hexastr(this.hydrographics);
+                out += int_to_hexastr(this.population);
+                out += int_to_hexastr(this.government);
+                out += int_to_hexastr(this.law_level);
+                out += "-" + int_to_hexastr(this.tech_level);
+                return out;
+            }
+
+            get say() {
+                let out = "# World Profile: " + this.uwp + " #";
+                out += "\n\n## Starport ##\n" + starport_desc[this.starport];
+                out += "\n\n## Size ##\n" + size_desc[this.size];
+                out += "\n\n## Atmosphere ##\n" + atmosphere_desc[this.atmosphere];
+                out += `\n\n## Hydrosphere ##\n${this.hydrographics * 10}% water.`;
+                out += "\n\n## Population ##\n" + population_desc[this.population];
+                out += "\n\n## Government ##\n" + government_desc[this.government];
+                out += "\n\n## Law ##\n" + law_desc[this.law_level];
+                out += "\n\n## Technology ##\n" + tech_desc[this.tech_level];
+                return out;
+            }
+        }
+
+        let worldy = new World();
+        document.getElementById("outie").innerHTML = worldy.say;
+
+        // let listy  = document.getElementById("listy")
+        // for (let attr in worldy) {
+        //     let tag = document.createElement("li");
+        //     tag.appendChild(
+        //         document.createTextNode(`\n${attr} ${worldy[attr]}`)
+        //     );
+        //     listy.appendChild(tag);
+        // }
+        
+    </script>
+</body>
