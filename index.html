@@ -150,22 +150,23 @@
         ];
 
         const tech_desc = [
-            "Stone Age.",
-            "Bronze Age to Middle Ages.",
-            "Renaissance period.",
-            "Enlightenment period.",
-            "Industrial revolution period.",
-            "Early 20th century.",
-            "Mid 20th century. Pre-atomic.",
-            "Late 20th century. Post-atomic.",
-            "21st century. Semiconductors.",
-            "Primitive interstellar spaceflight. Fusion.",
-            "Average Imperial.",
-            "Average Imperial.",
-            "Above average Imperial.",
-            "Above average Imperial.",
-            "Imperial state-of-the-art.",
-            "Remarkably advanced.",
+            "Level 0: Stone Age.",
+            "Level 1: Bronze Age to Middle Ages.",
+            "Level 2: Renaissance period.",
+            "Level 3: Enlightenment period.",
+            "Level 4: Industrial revolution period.",
+            "Level 5: Early 20th century.",
+            "Level 6: Mid 20th century. Pre-atomic.",
+            "Level 7: Late 20th century. Post-atomic.",
+            "Level 8: 21st century. Semiconductors.",
+            "Level 9: Primitive interstellar spaceflight. Fusion.",
+            "Level 10: Interstellar community.",
+            "Level 11: Average Imperial.",
+            "Level 12: Average Imperial.",
+            "Level 13: Above average Imperial.",
+            "Level 14: Above average Imperial.",
+            "Level 15: Imperial state-of-the-art.",
+            "Level 16: Remarkably advanced.",
         ];
 
         class World {
@@ -307,10 +308,14 @@
                 out += "\n\n## Government ##\n" + government_desc[this.government];
                 out += "\n\n## Law ##\n" + law_desc[this.law_level];
                 out += "\n\n## Technology ##\n" + tech_desc[this.tech_level];
-                out += "\n\n## Trade Classifications ##\n";
+                out += "\n\n## Trade Classifications ##";
                 for (let tc of this.trade_classifications) {
-                    out += `- ${tc}\n`
+                    out += `\n- ${tc}`
                 }
+                out += "\n\n## System Features ##";
+                if (this.gas_giant) {out += "\n- Gas giant(s)";}
+                if (this.naval_base) {out += "\n- Naval base";}
+                if (this.scout_base) {out += "\n- Scout base";}
                 return out;
             }
         }
