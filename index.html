@@ -68,7 +68,7 @@
         const starport_desc = {
             "A": "Excellent quality installation.\nRefined fuel, annual overhaul, and\nshipyard services available.",
             "B": "Good quality installation.\nRefined fuel, annual overhaul, and\nnon-starship shipyard services available.",
-            "C": "Routine quality installation.\nUnrefined fuel and repair servicies available.",
+            "C": "Routine quality installation.\nUnrefined fuel and repair services available.",
             "D": "Poor quality installation.\nUnrefined fuel available.",
             "E": "Frontier installation.",
             "X": "None",
@@ -283,7 +283,7 @@
                 if (this.atmosphere < 2 || this.atmosphere > 9) {
                     mods = -4;
                 }
-                return Math.max(d(2, 6) - 7 + this.size + mods, 0);
+                return Math.min(Math.max(d(2, 6) - 7 + this.size + mods, 0), 10);
             }
 
             get uwp() {
